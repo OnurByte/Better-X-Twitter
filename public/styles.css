@@ -1,9 +1,15 @@
-.bx-quick-actions { display: inline-flex; gap: 2px; margin-inline-start: 8px; }
-.bx-quick-actions button { border: 0; border-radius: 999px; background: transparent; cursor: pointer; padding: 3px 5px; }
+.bx-icon { width: 16px; height: 16px; display: block; flex: 0 0 16px; }
+.bx-quick-actions { display: inline-flex; gap: 2px; margin-inline-start: 8px; vertical-align: middle; }
+.bx-quick-actions button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; padding: 5px; }
 .bx-quick-actions button:hover { background: rgb(29 155 240 / 15%); }
+.bx-country-badge { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: 6px; padding: 3px 7px; border: 1px solid rgb(83 100 113 / 50%); border-radius: 999px; background: rgb(15 20 25 / 80%); color: inherit; font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; vertical-align: middle; }
+.bx-country-badge .bx-icon { width: 13px; height: 13px; flex-basis: 13px; }
+.bx-x-icon { width: 18px; height: 18px; flex-basis: 18px; }
+.bx-menu-item, .bx-profile-tools, .bx-text-action, [data-bx-ai-reply="true"] { display: inline-flex; align-items: center; gap: 6px; }
+.bx-text-action { border: 1px solid rgb(83 100 113 / 50%); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; padding: 7px 12px; }
+.bx-text-action:hover { background: rgb(29 155 240 / 15%); }
 .bx-toast { position: fixed; inset: auto 16px 16px auto; z-index: 2147483647; padding: 10px 14px; border-radius: 8px; color: white; background: #111; font: 14px system-ui; }
 .bx-popover { position: fixed; z-index: 2147483647; background: Canvas; color: CanvasText; border: 1px solid ButtonBorder; padding: 12px; border-radius: 8px; box-shadow: 0 4px 18px rgb(0 0 0 / 30%); }
-.bx-country-badge { margin-inline-start: 6px; }
 .bx-recovered { border: 1px solid #1d9bf0; border-radius: 12px; padding: 12px; color: CanvasText; }
 .bx-no-metrics [data-testid="app-text-transition-container"], .bx-no-metrics [aria-label*="likes"], .bx-no-metrics [aria-label*="reposts"] { visibility: hidden; }
 .bx-no-trending [data-testid="sidebarColumn"] { display: none; }

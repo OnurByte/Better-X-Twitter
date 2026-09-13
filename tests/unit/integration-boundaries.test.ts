@@ -3,9 +3,11 @@ import { resolveCountry } from "../../src/features/country-flags/resolver";
 import { normalizeNote } from "../../src/features/notes/store";
 import { insertReply } from "../../src/features/ai-reply/insert";
 import { shouldApplyFocus } from "../../src/features/focus-mode/focus";
-import { renderCountryBadge } from "../../src/features/country-flags/ui";
+import { appendCountryBadge, renderCountryBadge } from "../../src/features/country-flags/ui";
 import { copyShareLink } from "../../src/features/smart-share/share";
 import { DomAdapter } from "../../src/x/dom-adapter";
+import { injectQuickActions } from "../../src/features/quick-actions";
+import { replaceXActionIcons } from "../../src/x/icon-replacer";
 
 describe("integration boundaries", () => {
   it("prefers public X account region over profile location", () => {
@@ -29,8 +31,38 @@ describe("integration boundaries", () => {
 
   it("renders public country metadata without claiming location", () => {
     const badge = renderCountryBadge({ handle: "alice", countryCode: "TR", countryName: "Türkiye", source: "x-about-account", confidence: "high", fetchedAt: 1 });
-    expect(badge.textContent).toContain("🇹🇷");
+    expect(badge.textContent).toContain("TR");
+    expect(badge.textContent).not.toContain("🇹🇷");
+    expect(badge.querySelector("svg")).not.toBeNull();
     expect(badge.getAttribute("title")).toContain("X account region");
+  });
+
+  it("keeps duplicate country badges to one per post", () => {
+    const host = document.createElement("article");
+    host.innerHTML = '<span data-bx-quick-actions><button></button><button></button><button></button></span>';
+    const country = { handle: "alice", countryCode: "TR", countryName: "Türkiye", source: "x-about-account" as const, confidence: "high" as const, fetchedAt: 1 };
+    appendCountryBadge(host, country);
+    appendCountryBadge(host, country);
+    expect(host.querySelectorAll("[data-bx-quick-actions] > .bx-country-badge")).toHaveLength(1);
+  });
+
+  it("renders quick actions with Heroicons instead of emoji", () => {
+    const element = document.createElement("article");
+    const post = { element, author: { handle: "alice" } } as Parameters<typeof injectQuickActions>[0];
+    injectQuickActions(post, {} as Parameters<typeof injectQuickActions>[1], { block: true, notInterested: true, mute: true }, () => {});
+    expect(element.querySelectorAll("[data-bx-quick-actions] button svg")).toHaveLength(3);
+    expect(element.textContent).not.toMatch(/[⛔🔇✕]/);
+  });
+
+  it("replaces X post action SVGs with Heroicons", () => {
+    const button = document.createElement("button");
+    button.dataset.testid = "like";
+    button.setAttribute("aria-label", "Like");
+    button.innerHTML = "<svg><path /></svg>";
+    document.body.append(button);
+    replaceXActionIcons();
+    expect(button.querySelector("svg.bx-x-icon")).not.toBeNull();
+    expect(button.querySelector("svg path")?.getAttribute("d")).toContain("M21 8.25");
   });
 
   it("returns only the explicitly selected share URL", () => {

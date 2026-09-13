@@ -26,6 +26,14 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await page.goto("https://x.com/home");
     await expect(page.locator('article[data-testid="tweet"]')).toContainText("A deterministic X post");
     await expect(page.locator("[data-bx-quick-actions]")).toHaveCount(1);
+    await page.evaluate(() => {
+      const button = document.createElement("button");
+      button.dataset.testid = "like";
+      button.setAttribute("aria-label", "Like");
+      button.innerHTML = "<svg><path /></svg>";
+      document.body.append(button);
+    });
+    await expect(page.locator('button[data-testid="like"] svg.bx-x-icon')).toHaveCount(1);
     expect(errors).toEqual([]);
   } finally {
     await context.close();

@@ -6,4 +6,4 @@ export function mapProfileLocation(location: string): { countryCode: string; cou
   const country = values.length > 1 ? countries[values.at(-1)!] : countries[values[0]];
   return country ? { ...country, confidence: "estimated" } : undefined;
 }
-export function flagForCountry(code: string): string { return code.toUpperCase().replace(/[A-Z]/g, (letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397)); }
+export function flagForCountry(code: string): string { return code.toUpperCase(); }
