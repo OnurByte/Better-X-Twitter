@@ -2,8 +2,8 @@
 .bx-quick-actions { display: inline-flex; gap: 2px; margin-inline-start: 8px; vertical-align: middle; }
 .bx-quick-actions button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; padding: 5px; }
 .bx-quick-actions button:hover { background: rgb(29 155 240 / 15%); }
-.bx-country-badge { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: 6px; padding: 3px 7px; border: 1px solid rgb(83 100 113 / 50%); border-radius: 999px; background: rgb(15 20 25 / 80%); color: inherit; font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; vertical-align: middle; }
-.bx-country-badge .bx-icon { width: 13px; height: 13px; flex-basis: 13px; }
+.bx-country-badge { display: inline-flex; align-items: center; margin-inline-start: 6px; padding: 2px; border: 1px solid rgb(83 100 113 / 50%); border-radius: 4px; background: rgb(15 20 25 / 80%); color: inherit; vertical-align: middle; overflow: hidden; }
+.bx-country-flag { display: block; width: 24px; height: 16px; }
 .bx-x-icon { width: 18px; height: 18px; flex-basis: 18px; }
 .bx-menu-item, .bx-profile-tools, .bx-text-action, [data-bx-ai-reply="true"] { display: inline-flex; align-items: center; gap: 6px; }
 .bx-text-action { border: 1px solid rgb(83 100 113 / 50%); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; padding: 7px 12px; }

@@ -1,2 +1,2 @@
-export { flagForCountry, mapProfileLocation } from "./country";
+export { mapProfileLocation } from "./country";
 export { resolveCountry } from "./resolver";

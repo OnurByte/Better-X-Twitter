@@ -6,7 +6,24 @@ const actionIcons: Array<[RegExp, HeroIconName]> = [
   [/\b(unlike|like)\b/, "heart"],
   [/\b(remove bookmark|bookmark)\b/, "bookmark"],
   [/\b(share|copy link)\b/, "share"],
-  [/\b(more|caret)\b/, "ellipsis-horizontal"]
+  [/\b(more|caret)\b/, "ellipsis-horizontal"],
+  [/\b(unfollow|unsubscribe)\b/, "user-minus"],
+  [/\b(follow|subscribe)\b/, "user-plus"],
+  [/\b(home|timeline)\b/, "home"],
+  [/\b(search|explore)\b/, "magnifying-glass"],
+  [/\b(notification|alert)s?\b/, "bell"],
+  [/\b(direct message|message)s?\b/, "envelope"],
+  [/\b(community|communities|people)\b/, "user-group"],
+  [/\b(list|lists)\b/, "queue-list"],
+  [/\b(setting|settings|preference)s?\b/, "cog-6-tooth"],
+  [/\b(menu|navigation)\b/, "bars-3"],
+  [/\b(compose|write|post)\b/, "pencil"],
+  [/\b(profile|account|me)\b/, "user"],
+  [/\b(previous|back)\b/, "chevron-left"],
+  [/\b(next|forward)\b/, "chevron-right"],
+  [/\b(close|cancel)\b/, "x-mark"],
+  [/\b(image|photo|media)\b/, "photo"],
+  [/\b(play|pause|video)\b/, "play-pause"]
 ];
 
 function iconFor(button: HTMLElement): HeroIconName | undefined {

@@ -31,9 +31,9 @@ describe("integration boundaries", () => {
 
   it("renders public country metadata without claiming location", () => {
     const badge = renderCountryBadge({ handle: "alice", countryCode: "TR", countryName: "Türkiye", source: "x-about-account", confidence: "high", fetchedAt: 1 });
-    expect(badge.textContent).toContain("TR");
-    expect(badge.textContent).not.toContain("🇹🇷");
-    expect(badge.querySelector("svg")).not.toBeNull();
+    expect(badge.textContent).toBe("");
+    expect(badge.querySelector("svg.bx-country-flag")).not.toBeNull();
+    expect(badge.querySelector("rect")?.getAttribute("fill")).toBe("#e30a17");
     expect(badge.getAttribute("title")).toContain("X account region");
   });
 
@@ -55,14 +55,17 @@ describe("integration boundaries", () => {
   });
 
   it("replaces X post action SVGs with Heroicons", () => {
-    const button = document.createElement("button");
-    button.dataset.testid = "like";
-    button.setAttribute("aria-label", "Like");
-    button.innerHTML = "<svg><path /></svg>";
-    document.body.append(button);
+    const buttons = [["reply", "Reply"], ["retweet", "Repost"], ["like", "Like"], ["bookmark", "Bookmark"], ["share", "Share post"], ["caret", "More"]].map(([testid, label]) => {
+      const button = document.createElement("button");
+      button.dataset.testid = testid;
+      button.setAttribute("aria-label", label);
+      button.innerHTML = "<svg><path /></svg>";
+      document.body.append(button);
+      return button;
+    });
     replaceXActionIcons();
-    expect(button.querySelector("svg.bx-x-icon")).not.toBeNull();
-    expect(button.querySelector("svg path")?.getAttribute("d")).toContain("M21 8.25");
+    expect(buttons.every((button) => button.querySelector("svg.bx-x-icon"))).toBe(true);
+    expect(buttons[2].querySelector("svg path")?.getAttribute("d")).toContain("M21 8.25");
   });
 
   it("returns only the explicitly selected share URL", () => {
