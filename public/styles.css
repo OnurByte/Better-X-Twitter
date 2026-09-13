@@ -10,15 +10,7 @@
 .bx-text-action:hover { background: rgb(29 155 240 / 15%); }
 .bx-toast { position: fixed; inset: auto 16px 16px auto; z-index: 2147483647; padding: 10px 14px; border-radius: 8px; color: white; background: #111; font: 14px system-ui; }
 .bx-popover { position: fixed; z-index: 2147483647; background: Canvas; color: CanvasText; border: 1px solid ButtonBorder; padding: 12px; border-radius: 8px; box-shadow: 0 4px 18px rgb(0 0 0 / 30%); }
-.bx-sidebar-card { box-sizing: border-box; margin-block: 12px; padding: 16px; border: 1px solid rgb(47 51 54); border-radius: 16px; background: rgb(22 24 28); color: #e7e9ea; }
-.bx-sidebar-eyebrow { margin: 0 0 8px; color: #71767b; font: 700 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .08em; }
-.bx-sidebar-card h2 { margin: 0; font-size: 20px; line-height: 1.2; }
-.bx-sidebar-copy { margin: 8px 0 16px; color: #8b98a5; font-size: 14px; line-height: 1.35; }
-.bx-sidebar-nav { display: grid; gap: 4px; }
-.bx-sidebar-link { display: block; padding: 9px 10px; border-radius: 10px; color: inherit; font-size: 15px; font-weight: 700; text-decoration: none; }
-.bx-sidebar-link:hover, .bx-sidebar-link:focus-visible { background: rgb(29 155 240 / 15%); color: #1d9bf0; outline: none; }
 .bx-recovered { border: 1px solid #1d9bf0; border-radius: 12px; padding: 12px; color: CanvasText; }
-@media (prefers-color-scheme: light) { .bx-sidebar-card { border-color: #cfd9de; background: #f7f9f9; color: #0f1419; } .bx-sidebar-eyebrow { color: #536471; } .bx-sidebar-copy { color: #536471; } }
 .bx-no-metrics [data-testid="app-text-transition-container"], .bx-no-metrics [aria-label*="likes"], .bx-no-metrics [aria-label*="reposts"] { visibility: hidden; }
 .bx-no-trending [data-testid="sidebarColumn"] { display: none; }
 .bx-no-recommendations [data-testid="cellInnerDiv"]:has([data-testid="trend"]), .bx-reading-mode [data-testid="placementTracking"] { display: none; }

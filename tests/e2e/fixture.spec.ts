@@ -25,8 +25,7 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await page.route("https://x.com/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: fixture }));
     await page.goto("https://x.com/home");
     await expect(page.locator('article[data-testid="tweet"]')).toContainText("A deterministic X post");
-    await expect(page.locator("[data-bx-sidebar]")).toHaveCount(1);
-    await expect(page.locator('[data-testid="sidebarColumn"]')).not.toContainText("Subscribe to Premium");
+    await expect(page.locator('[data-testid="sidebarColumn"]')).toBeHidden();
     await expect(page.locator("[data-bx-quick-actions]")).toHaveCount(1);
     await page.evaluate(() => {
       const button = document.createElement("button");
