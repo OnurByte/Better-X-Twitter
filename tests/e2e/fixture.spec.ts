@@ -26,6 +26,8 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await page.goto("https://x.com/home");
     await expect(page.locator('article[data-testid="tweet"]')).toContainText("A deterministic X post");
     await expect(page.locator('[data-testid="sidebarColumn"]')).toBeHidden();
+    await expect(page.locator('a[data-testid="AppTabBar_Search_Link"]')).toHaveAttribute("href", "/search");
+    await expect(page.locator("body")).toHaveCSS("font-family", /Helvetica Neue/);
     await expect(page.locator("[data-bx-quick-actions]")).toHaveCount(1);
     await page.evaluate(() => {
       const button = document.createElement("button");
@@ -36,6 +38,36 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     });
     await expect(page.locator('button[data-testid="like"] svg.bx-x-icon')).toHaveCount(1);
     expect(errors).toEqual([]);
+  } finally {
+    await context.close();
+  }
+});
+
+test("opens the advanced search form and navigates with native X syntax", async () => {
+  const extensionPath = path.resolve("dist");
+  const fixture = fs.readFileSync(path.resolve("tests/fixtures/x.html"), "utf8");
+  const context = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), "better-x-search-e2e-")), {
+    headless: true,
+    executablePath: "/usr/bin/chromium",
+    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
+  });
+  try {
+    context.serviceWorkers()[0] ?? await context.waitForEvent("serviceworker");
+    const page = await context.newPage();
+    await page.route("https://x.com/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: fixture }));
+    await page.goto("https://x.com/explore");
+    await expect(page).toHaveURL(/https:\/\/x\.com\/search$/);
+    await expect(page.locator("[data-bx-advanced-search]")).toBeVisible();
+    await page.goto("https://x.com/home");
+    await page.locator('a[data-testid="AppTabBar_Search_Link"]').click();
+    await expect(page.locator("[data-bx-advanced-search]")).toBeVisible();
+    await expect(page.locator(".bx-search-examples button")).toHaveCount(4);
+    await page.locator('input[name="allWords"]').fill("nasa esa");
+    await page.locator(".bx-search-advanced summary").click();
+    await page.locator('input[name="from"]').fill("@NASA");
+    await page.locator('select[name="media"]').selectOption("images");
+    await page.locator(".bx-search-submit-bottom").click();
+    await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("nasa esa from:NASA filter:images");
   } finally {
     await context.close();
   }
@@ -54,7 +86,7 @@ test("renders and saves the extension settings page", async () => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/options.html`);
     await expect(page.locator("h1").first()).toContainText("Better X");
-    await expect(page.locator(".feature-card")).toHaveCount(20);
+    await expect(page.locator(".feature-card")).toHaveCount(21);
     await expect(page.locator("#save")).toBeVisible();
     expect(await page.locator("body").evaluate((body) => getComputedStyle(body).backgroundColor)).toBe("rgb(8, 11, 16)");
     await page.locator("label.feature-card", { hasText: "Media saver" }).click();

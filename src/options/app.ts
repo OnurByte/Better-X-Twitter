@@ -6,6 +6,7 @@ const app = document.querySelector<HTMLElement>("#app")!;
 const featureMeta: Record<string, { label: string; description: string }> = {
   "quick-actions": { label: "Quick actions", description: "Block, mute, or dismiss from each post." },
   "sidebar-cleanup": { label: "Hide X sidebar", description: "Remove X's promotional sidebar from the timeline." },
+  "advanced-search": { label: "Advanced search", description: "Build native X search queries from a form." },
   "fx-revival": { label: "FxTwitter revival", description: "Try to recover posts X fails to render." },
   "feed-rules": { label: "Local feed rules", description: "Hide or soften posts with local rules." },
   "ai-feed-filter": { label: "AI feed filter", description: "Classify posts through your configured provider." },

@@ -47,7 +47,7 @@ export interface BetterXSettings {
 export const defaults: BetterXSettings = {
   version: 1,
   features: {
-    "quick-actions": true, "sidebar-cleanup": true, "fx-revival": true, "feed-rules": true, "ai-feed-filter": false,
+    "quick-actions": true, "sidebar-cleanup": true, "advanced-search": true, "fx-revival": true, "feed-rules": true, "ai-feed-filter": false,
     "ai-reply": false, "composer-tools": false, "smart-share": true, "rediscover": false,
     "user-notes": false, "country-flags": false, "timeline-filter": false, "time-machine": false,
     "media-saver": false, "local-library": false, momentum: false, "focus-mode": false,
