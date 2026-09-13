@@ -2,6 +2,14 @@ import type { BetterXDatabase } from "../core/plugin";
 
 const stores = ["posts", "bookmarks", "likes", "rediscover_history", "user_notes", "feed_rule_cache", "ai_verdict_cache", "download_history", "library_entries", "account_country_cache"] as const;
 
+export function storageKey(value: unknown): IDBValidKey {
+  if (!value || typeof value !== "object") throw new Error("Database records must be objects");
+  const record = value as Record<string, unknown>;
+  const key = record.id ?? record.postId ?? record.handle;
+  if (typeof key !== "string" && typeof key !== "number") throw new Error("Database record requires id, postId, or handle");
+  return key;
+}
+
 export class IndexedDb implements BetterXDatabase {
   private db?: IDBDatabase;
   private async open(): Promise<IDBDatabase> {
@@ -14,7 +22,7 @@ export class IndexedDb implements BetterXDatabase {
     });
   }
   async get<T>(store: string, key: IDBValidKey): Promise<T | undefined> { return this.transaction<T | undefined>(store, "readonly", (objectStore) => objectStore.get(key)); }
-  async put<T>(store: string, value: T): Promise<void> { await this.transaction(store, "readwrite", (objectStore) => objectStore.put(value)); }
+  async put<T>(store: string, value: T): Promise<void> { await this.transaction(store, "readwrite", (objectStore) => objectStore.put(value, storageKey(value))); }
   async delete(store: string, key: IDBValidKey): Promise<void> { await this.transaction(store, "readwrite", (objectStore) => objectStore.delete(key)); }
   async all<T>(store: string): Promise<T[]> { return this.transaction<T[]>(store, "readonly", (objectStore) => objectStore.getAll()); }
   private async transaction<T>(store: string, mode: IDBTransactionMode, action: (objectStore: IDBObjectStore) => IDBRequest): Promise<T> { if (!stores.includes(store as typeof stores[number])) throw new Error(`Unknown store: ${store}`); const db = await this.open(); return new Promise((resolve, reject) => { const request = action(db.transaction(store, mode).objectStore(store)); request.onsuccess = () => resolve(request.result as T); request.onerror = () => reject(request.error ?? new Error("IndexedDB transaction failed")); }); }

@@ -6,8 +6,15 @@ import { chooseMedia } from "../../src/features/media-saver/resolver";
 import { visibleForTimeline } from "../../src/features/timeline-filter/filter";
 import { slopSignal } from "../../src/features/slop-indicator/heuristic";
 import { searchLibrary } from "../../src/features/local-library/search";
+import { storageKey } from "../../src/storage/database";
 
 describe("roadmap feature boundaries", () => {
+  it("derives stable IndexedDB keys from supported records", () => {
+    expect(storageKey({ id: "post-1" })).toBe("post-1");
+    expect(storageKey({ postId: "post-2" })).toBe("post-2");
+    expect(storageKey({ handle: "alice" })).toBe("alice");
+  });
+
   it("fails open for malformed AI verdicts", () => {
     expect(parseAIVerdict("not json")).toEqual({ action: "show", confidence: 0, reason: "invalid verdict" });
     expect(parseAIVerdict(JSON.stringify({ action: "hide", confidence: 0.9, reason: "bait" }))).toMatchObject({ action: "hide", confidence: 0.9 });
