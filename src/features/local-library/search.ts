@@ -1,0 +1,2 @@
+export interface LibraryRecord { text: string; handle?: string; tags?: string[]; url?: string; createdAt?: number }
+export function searchLibrary(records: LibraryRecord[], query: string): LibraryRecord[] { const needle = query.trim().toLocaleLowerCase(); if (!needle) return records; return records.filter((record) => [record.text, record.handle ?? "", record.url ?? "", ...(record.tags ?? [])].join(" ").toLocaleLowerCase().includes(needle)); }

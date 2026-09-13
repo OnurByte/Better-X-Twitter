@@ -1,0 +1,1 @@
+export function momentum(metrics: { likes?: number; reposts?: number; replies?: number }, ageHours: number, replyWeight = 2): number { return Math.round(((metrics.likes ?? 0) + (metrics.reposts ?? 0) + (metrics.replies ?? 0) * replyWeight) / Math.max(ageHours, 1 / 60)); }

@@ -1,0 +1,1 @@
+export function insertReply(composer: HTMLElement, originalDraft: string, reply: string): boolean { if (composer.textContent !== originalDraft) return false; composer.textContent = reply; composer.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: reply })); composer.focus(); return true; }

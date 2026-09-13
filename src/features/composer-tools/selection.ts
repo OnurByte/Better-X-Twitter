@@ -1,0 +1,1 @@
+export function replaceSelectionIfUnchanged(target: HTMLElement, original: string, replacement: string): boolean { if (target.textContent !== original) return false; target.textContent = replacement; return true; }

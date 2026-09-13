@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Better X",
+  "version": "0.1.0",
+  "description": "A local-first, controllable X client layer.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://api.fxtwitter.com/*"
+  ],
+  "optional_permissions": ["downloads", "clipboardWrite"],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "worker.js", "type": "module" },
+  "action": { "default_title": "Better X", "default_popup": "popup.html" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "content_scripts": [{
+    "matches": ["https://x.com/*", "https://twitter.com/*"],
+    "js": ["content.js"],
+    "css": ["styles.css"],
+    "run_at": "document_idle",
+    "world": "ISOLATED"
+  }]
+}

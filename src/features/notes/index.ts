@@ -1,0 +1,1 @@
+export { normalizeNote } from "./store";

@@ -1,0 +1,1 @@
+export function applyDefaultFeed(tab: "for-you" | "following" | "remember"): void { if (!/^\/home\/?$/.test(location.pathname)) return; if (tab === "following" && new URLSearchParams(location.search).get("f") !== "following") history.replaceState({}, "", "/home?f=following"); }

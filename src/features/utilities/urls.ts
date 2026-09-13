@@ -1,0 +1,2 @@
+export function shareUrl(original: string, target: "original" | "fxtwitter" | "vxtwitter"): string { if (target === "original") return original; return original.replace(/^https?:\/\/((?:www\.)?)(?:x|twitter)\.com/i, `https://${target}.com`); }
+export function buildSearchUrl(handle: string, from: string, until: string): string { const query = `from:${handle.replace(/^@/, "")} since:${from} until:${until}`; return `https://x.com/search?q=${encodeURIComponent(query)}&src=typed_query`; }

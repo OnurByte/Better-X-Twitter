@@ -1,0 +1,1 @@
+export function visibleForTimeline(type: "original" | "reply" | "quote" | "repost" | "promoted", settings: { originals: boolean; replies: boolean; quotes: boolean; reposts: boolean; promoted: boolean }): boolean { return ({ original: settings.originals, reply: settings.replies, quote: settings.quotes, repost: settings.reposts, promoted: settings.promoted })[type]; }

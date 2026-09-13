@@ -1,0 +1,10 @@
+.bx-quick-actions { display: inline-flex; gap: 2px; margin-inline-start: 8px; }
+.bx-quick-actions button { border: 0; border-radius: 999px; background: transparent; cursor: pointer; padding: 3px 5px; }
+.bx-quick-actions button:hover { background: rgb(29 155 240 / 15%); }
+.bx-toast { position: fixed; inset: auto 16px 16px auto; z-index: 2147483647; padding: 10px 14px; border-radius: 8px; color: white; background: #111; font: 14px system-ui; }
+.bx-popover { position: fixed; z-index: 2147483647; background: Canvas; color: CanvasText; border: 1px solid ButtonBorder; padding: 12px; border-radius: 8px; box-shadow: 0 4px 18px rgb(0 0 0 / 30%); }
+.bx-country-badge { margin-inline-start: 6px; }
+.bx-recovered { border: 1px solid #1d9bf0; border-radius: 12px; padding: 12px; color: CanvasText; }
+.bx-no-metrics [data-testid="app-text-transition-container"], .bx-no-metrics [aria-label*="likes"], .bx-no-metrics [aria-label*="reposts"] { visibility: hidden; }
+.bx-no-trending [data-testid="sidebarColumn"] { display: none; }
+.bx-no-recommendations [data-testid="cellInnerDiv"]:has([data-testid="trend"]), .bx-reading-mode [data-testid="placementTracking"] { display: none; }

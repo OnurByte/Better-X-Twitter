@@ -1,0 +1,2 @@
+export interface PostIdentity { statusId?: string; authorHandle?: string; contentHash: string; domRevision: number }
+export interface ParsedPost { identity: PostIdentity; statusId?: string; url?: string; author: { handle?: string; displayName?: string }; text: string; type: "original" | "reply" | "quote" | "repost" | "promoted"; metrics?: { replies?: number; reposts?: number; likes?: number; views?: number }; createdAt?: Date; element: HTMLElement }

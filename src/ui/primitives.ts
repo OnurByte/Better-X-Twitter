@@ -1,0 +1,2 @@
+import type { UiPrimitives } from "../core/plugin";
+export const ui: UiPrimitives = { toast(message) { const node = document.createElement("div"); node.className = "bx-toast"; node.textContent = message; document.body.append(node); setTimeout(() => node.remove(), 2500); }, popover(anchor, content) { const root = document.createElement("div"); root.className = "bx-popover"; root.append(content); document.body.append(root); const rect = anchor.getBoundingClientRect(); root.style.left = `${rect.left}px`; root.style.top = `${rect.bottom + 4}px`; } };

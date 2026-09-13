@@ -1,0 +1,1 @@
+export { slopSignal } from "./heuristic";

@@ -1,0 +1,1 @@
+export { shouldApplyFocus } from "./focus";
