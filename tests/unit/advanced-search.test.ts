@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAdvancedSearchQuery, replaceExploreWithSearch, type AdvancedSearchValues } from "../../src/features/advanced-search";
+import { buildAdvancedSearchQuery, renderAdvancedSearch, replaceExploreWithSearch, type AdvancedSearchValues } from "../../src/features/advanced-search";
 
 describe("advanced search", () => {
   it("translates the form fields into native X operators", () => {
@@ -37,5 +37,18 @@ describe("advanced search", () => {
     expect(link.getAttribute("href")).toBe("/search");
     expect(link.getAttribute("aria-label")).toBe("Search");
     expect(link.textContent).toBe("Search");
+  });
+
+  it("offers a detailed English example with a searchable topic", () => {
+    const root = document.createElement("main");
+    document.body.append(root);
+
+    renderAdvancedSearch(root);
+
+    const example = root.querySelector<HTMLButtonElement>("[data-bx-search-example]")!;
+    example.click();
+    expect(example.textContent).toContain("15 July 2016");
+    expect(root.querySelector<HTMLInputElement>('input[name="allWords"]')?.value).toContain('"15 Temmuz" OR darbe OR coup');
+    expect(root.querySelector<HTMLOutputElement>("[data-bx-search-query]")?.textContent).toContain("since:2016-07-15_15:00:00_UTC");
   });
 });
