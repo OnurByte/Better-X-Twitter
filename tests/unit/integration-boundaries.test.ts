@@ -5,6 +5,7 @@ import { insertReply } from "../../src/features/ai-reply/insert";
 import { shouldApplyFocus } from "../../src/features/focus-mode/focus";
 import { renderCountryBadge } from "../../src/features/country-flags/ui";
 import { copyShareLink } from "../../src/features/smart-share/share";
+import { DomAdapter } from "../../src/x/dom-adapter";
 
 describe("integration boundaries", () => {
   it("prefers public X account region over profile location", () => {
@@ -34,5 +35,21 @@ describe("integration boundaries", () => {
 
   it("returns only the explicitly selected share URL", () => {
     expect(copyShareLink("https://x.com/a/status/1", "fxtwitter")).toBe("https://fxtwitter.com/a/status/1");
+  });
+
+  it("opens the overflow menu belonging to the selected post", async () => {
+    document.body.innerHTML = `<article data-testid="tweet"><a href="/alice/status/1">time</a><a href="/alice">Alice</a><div data-testid="tweetText">first</div><button data-testid="caret"></button></article><article data-testid="tweet"><a href="/bob/status/2">time</a><a href="/bob">Bob</a><div data-testid="tweetText">second</div><button data-testid="caret"></button></article>`;
+    const posts = Array.from(document.querySelectorAll<HTMLElement>("article"));
+    const adapter = new DomAdapter();
+    const target = adapter.parsePost(posts[1]);
+    expect(target).not.toBeNull();
+    let firstClicks = 0;
+    let secondClicks = 0;
+    posts[0].querySelector("[data-testid=caret]")!.addEventListener("click", () => { firstClicks++; });
+    posts[1].querySelector("[data-testid=caret]")!.addEventListener("click", () => { secondClicks++; document.body.insertAdjacentHTML("beforeend", '<div role="menu"><div role="menuitem">Block @bob</div></div>'); });
+    const menu = await adapter.openPostMenu(target!);
+    expect(firstClicks).toBe(0);
+    expect(secondClicks).toBe(1);
+    expect(await menu.choose("block")).toBe(true);
   });
 });

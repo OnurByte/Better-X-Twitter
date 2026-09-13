@@ -20,5 +20,21 @@ export class DomAdapter implements XDomAdapter {
     return () => observer.disconnect();
   }
   findComposer(): HTMLElement | null { return document.querySelector<HTMLElement>('[data-testid="tweetTextarea_0"], [contenteditable="true"]'); }
-  async openPostMenu(_post: ParsedPost): Promise<XMenuHandle> { const button = document.querySelector<HTMLElement>('[aria-label*="More"], [data-testid="caret"]'); button?.click(); return { choose: async (label) => { const item = Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((el) => el.textContent?.toLowerCase().includes(label.toLowerCase())); if (!item) return false; item.click(); return true; } }; }
+  async openPostMenu(post: ParsedPost): Promise<XMenuHandle> {
+    const button = post.element.querySelector<HTMLElement>('[data-testid="caret"], [aria-label="More"], [aria-label*="More"]');
+    if (!button) return { choose: async () => false };
+    button.click();
+    return {
+      choose: async (label) => {
+        const findItem = () => Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find((el) => el.textContent?.toLowerCase().includes(label.toLowerCase()));
+        const immediate = findItem();
+        if (immediate) { immediate.click(); return true; }
+        return new Promise((resolve) => {
+          const observer = new MutationObserver(() => { const item = findItem(); if (!item) return; observer.disconnect(); window.clearTimeout(timeout); item.click(); resolve(true); });
+          const timeout = window.setTimeout(() => { observer.disconnect(); resolve(false); }, 1500);
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      }
+    };
+  }
 }
