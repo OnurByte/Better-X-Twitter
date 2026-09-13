@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import { copyFileSync } from "node:fs";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [{ name: "copy-extension-manifest", closeBundle() { copyFileSync("manifest.json", "dist/manifest.json"); } }],
+  plugins: [tailwindcss(), { name: "copy-extension-manifest", closeBundle() { copyFileSync("manifest.json", "dist/manifest.json"); } }],
   build: {
     outDir: "dist",
     emptyOutDir: true,

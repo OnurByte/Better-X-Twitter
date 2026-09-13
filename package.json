@@ -4,14 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && vite build --config vite.content.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build && playwright test",
     "lint": "eslint ."
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/chrome": "^0.0.270",
     "@types/node": "^22.10.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
@@ -20,6 +21,7 @@
     "eslint": "^9.17.0",
     "jsdom": "^25.0.1",
     "playwright": "^1.49.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^6.0.5",
     "vitest": "^2.1.8"
