@@ -16,12 +16,15 @@ import { filterNotification } from "./notification-filters/filter";
 import { applyDefaultFeed } from "./default-feed/apply";
 import { observeRoutes } from "../x/route-observer";
 import { installXActionIcons } from "../x/icon-replacer";
+import { installSidebarCleanup } from "./sidebar-cleanup";
 
 function onPosts(context: PluginContext, handler: (post: ParsedPost) => void): () => void { return context.events.on("POST_DISCOVERED", (value) => { if (value) handler(value as ParsedPost); }); }
 
 export function contentPlugins(): BetterXPlugin[] {
+  let stopSidebarCleanup: () => void = () => undefined;
   return [
     { id: "x-action-icons", name: "X Action Icons", defaultEnabled: true, start() { installXActionIcons(); }, stop() {} },
+    { id: "sidebar-cleanup", name: "Better X Sidebar", defaultEnabled: true, start() { stopSidebarCleanup = installSidebarCleanup(); }, stop() { stopSidebarCleanup(); } },
     { id: "quick-actions", name: "Quick Actions", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { const stop = onPosts(context, (post) => injectQuickActions(post, context.x, settings.quickActions, context.ui.toast)); context.events.on("SETTINGS_CHANGED", () => undefined); void stop; }); }, stop() {} },
     { id: "feed-rules", name: "Local Feed Rules", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { onPosts(context, (post) => { const decision = evaluateRules(post, settings.feed.rules); if (decision.action === "hide") post.element.hidden = true; if (decision.action === "reduce") post.element.style.opacity = "0.55"; }); }); }, stop() {} },
     { id: "fx-revival", name: "FxTwitter Revival", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { if (!settings.features["fx-revival"]) return; onPosts(context, (post) => { if (!post.statusId || !/unavailable|suspended|failed to load|blocked/i.test(post.element.textContent ?? "")) return; void context.runtime.request({ type: "fx.status", statusId: post.statusId }).then((response: unknown) => { const result = response as { ok?: boolean; value?: { kind: string; post?: { text: string; author: { handle?: string } } } }; if (!result.ok || result.value?.kind !== "success" || !result.value.post) return; const card = document.createElement("div"); card.dataset.bxRecovered = "true"; card.className = "bx-recovered"; card.textContent = `Recovered by Better X · @${result.value.post.author.handle ?? "unknown"}: ${result.value.post.text}`; post.element.replaceChildren(card); }).catch(() => {}); }); }); }, stop() {} },
