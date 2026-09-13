@@ -26,6 +26,7 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await page.goto("https://x.com/home");
     await expect(page.locator('article[data-testid="tweet"]')).toContainText("A deterministic X post");
     await expect(page.locator('[data-testid="sidebarColumn"]')).toBeHidden();
+    await expect(page.locator("aside")).toBeHidden();
     await expect(page.locator('main section:has-text("Who to follow")')).toBeHidden();
     await expect(page.locator('main section:has-text("Trending now")')).toBeHidden();
     await expect(page.locator("main footer")).toBeHidden();

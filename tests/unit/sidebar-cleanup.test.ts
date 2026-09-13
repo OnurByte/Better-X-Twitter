@@ -22,4 +22,13 @@ describe("sidebar cleanup", () => {
     expect(document.querySelector<HTMLElement>("footer")?.hidden).toBe(true);
     stop();
   });
+
+  it("hides a semantic aside even without X's sidebar test id", () => {
+    document.body.innerHTML = `<aside><h2>Today's News</h2><p>Trending now</p></aside><main>Search</main>`;
+    const stop = installSidebarCleanup();
+
+    expect(document.querySelector<HTMLElement>("aside")?.hidden).toBe(true);
+    expect(document.querySelector("main")?.textContent).toBe("Search");
+    stop();
+  });
 });

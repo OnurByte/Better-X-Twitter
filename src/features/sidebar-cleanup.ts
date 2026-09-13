@@ -1,5 +1,5 @@
 const sidebarSelector = '[data-testid="sidebarColumn"]';
-const bloatSelector = `${sidebarSelector}, [data-testid="UserFollowSuggestions"], footer, [aria-label="Who to follow"], [aria-label="Trending now"], [aria-label="What’s happening"], [aria-label="Today's News"]`;
+const bloatSelector = `${sidebarSelector}, aside, [data-testid="UserFollowSuggestions"], footer, [aria-label="Who to follow"], [aria-label="Trending now"], [aria-label="What’s happening"], [aria-label="Today's News"]`;
 const bloatHeading = /^(who to follow|you might like|trending now|what(?:'|’)s happening|today(?:'|’)s news|subscribe to premium)$/i;
 
 export function hideSidebar(root: HTMLElement): void {
