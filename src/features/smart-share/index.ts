@@ -1,1 +1,0 @@
-export { copyShareLink } from "./share";

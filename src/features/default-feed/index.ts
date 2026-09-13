@@ -1,1 +1,0 @@
-export { applyDefaultFeed } from "./apply";
