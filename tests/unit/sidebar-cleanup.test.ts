@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hideSidebar } from "../../src/features/sidebar-cleanup";
+import { hideSidebar, installSidebarCleanup } from "../../src/features/sidebar-cleanup";
 
 describe("sidebar cleanup", () => {
   it("hides X's entire sidebar", () => {
@@ -11,5 +11,15 @@ describe("sidebar cleanup", () => {
     expect(sidebar.hidden).toBe(true);
     expect(sidebar.dataset.bxSidebarHidden).toBe("true");
     expect(sidebar.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("hides bloat blocks embedded outside the sidebar root", () => {
+    document.body.innerHTML = `<main><section><h2>Who to follow</h2><p>Suggested accounts</p></section><section><h2>Trending now</h2><p>Trending topic</p></section><footer>Terms · Privacy</footer></main>`;
+    const stop = installSidebarCleanup();
+
+    expect(document.querySelector<HTMLElement>("section")?.hidden).toBe(true);
+    expect(document.querySelectorAll<HTMLElement>("section")[1].hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>("footer")?.hidden).toBe(true);
+    stop();
   });
 });
