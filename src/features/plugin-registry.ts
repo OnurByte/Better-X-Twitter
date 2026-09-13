@@ -16,17 +16,19 @@ import { filterNotification } from "./notification-filters/filter";
 import { applyDefaultFeed } from "./default-feed/apply";
 import { observeRoutes } from "../x/route-observer";
 import { installXActionIcons } from "../x/icon-replacer";
-import { installSidebarCleanup } from "./sidebar-cleanup";
+import { installGrokCleanup, installSidebarCleanup } from "./sidebar-cleanup";
 import { installAdvancedSearch } from "./advanced-search";
 
 function onPosts(context: PluginContext, handler: (post: ParsedPost) => void): () => void { return context.events.on("POST_DISCOVERED", (value) => { if (value) handler(value as ParsedPost); }); }
 
 export function contentPlugins(): BetterXPlugin[] {
   let stopSidebarCleanup: () => void = () => undefined;
+  let stopGrokCleanup: () => void = () => undefined;
   let stopAdvancedSearch: () => void = () => undefined;
   return [
     { id: "x-action-icons", name: "X Action Icons", defaultEnabled: true, start() { installXActionIcons(); }, stop() {} },
     { id: "sidebar-cleanup", name: "Better X Sidebar", defaultEnabled: true, start() { stopSidebarCleanup = installSidebarCleanup(); }, stop() { stopSidebarCleanup(); } },
+    { id: "hide-grok", name: "Hide Grok", defaultEnabled: true, start() { stopGrokCleanup = installGrokCleanup(); }, stop() { stopGrokCleanup(); } },
     { id: "advanced-search", name: "Advanced Search", defaultEnabled: true, start() { stopAdvancedSearch = installAdvancedSearch(); }, stop() { stopAdvancedSearch(); } },
     { id: "quick-actions", name: "Quick Actions", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { const stop = onPosts(context, (post) => injectQuickActions(post, context.x, settings.quickActions, context.ui.toast)); context.events.on("SETTINGS_CHANGED", () => undefined); void stop; }); }, stop() {} },
     { id: "feed-rules", name: "Local Feed Rules", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { onPosts(context, (post) => { const decision = evaluateRules(post, settings.feed.rules); if (decision.action === "hide") post.element.hidden = true; if (decision.action === "reduce") post.element.style.opacity = "0.55"; }); }); }, stop() {} },

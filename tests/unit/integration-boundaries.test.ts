@@ -68,6 +68,15 @@ describe("integration boundaries", () => {
     expect(buttons[2].querySelector("svg path")?.getAttribute("d")).toContain("M21 8.25");
   });
 
+  it("replaces X navigation SVGs with Heroicons", () => {
+    document.body.innerHTML = `<nav><a href="/home" aria-label="Home"><svg><path /></svg></a><a href="/explore" aria-label="Explore"><svg><path /></svg></a></nav>`;
+
+    replaceXActionIcons();
+
+    expect(document.querySelectorAll("nav svg.bx-x-icon")).toHaveLength(2);
+    expect(document.querySelector('a[aria-label="Explore"] svg path')?.getAttribute("d")).toContain("m21 21");
+  });
+
   it("returns only the explicitly selected share URL", () => {
     expect(copyShareLink("https://x.com/a/status/1", "fxtwitter")).toBe("https://fxtwitter.com/a/status/1");
   });

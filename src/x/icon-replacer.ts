@@ -32,7 +32,7 @@ function iconFor(button: HTMLElement): HeroIconName | undefined {
 }
 
 export function replaceXActionIcons(root: ParentNode = document): void {
-  root.querySelectorAll<HTMLElement>('button, [role="button"]').forEach((button) => {
+  root.querySelectorAll<HTMLElement>('a, button, [role="button"]').forEach((button) => {
     if (button.closest("[data-bx-quick-actions], [data-bx-menu-item], [data-bx-profile-tool], [data-bx-ai-reply]")) return;
     const name = iconFor(button);
     const current = button.querySelector<SVGSVGElement>("svg");

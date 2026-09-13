@@ -45,6 +45,9 @@ describe("advanced search", () => {
 
     renderAdvancedSearch(root);
 
+    expect(root.querySelector(".bx-search-main svg.bx-icon")).not.toBeNull();
+    expect(root.querySelector(".bx-search-main")?.textContent).not.toContain("⌕");
+
     const example = root.querySelector<HTMLButtonElement>("[data-bx-search-example]")!;
     example.click();
     expect(example.textContent).toContain("15 July 2016");

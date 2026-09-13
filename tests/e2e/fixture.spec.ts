@@ -26,11 +26,13 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await page.goto("https://x.com/home");
     await expect(page.locator('article[data-testid="tweet"]')).toContainText("A deterministic X post");
     await expect(page.locator('[data-testid="sidebarColumn"]')).toBeHidden();
-    await expect(page.locator("aside")).toBeHidden();
+    await expect(page.locator('[role="complementary"]')).toBeHidden();
     await expect(page.locator('main section:has-text("Who to follow")')).toBeHidden();
     await expect(page.locator('main section:has-text("Trending now")')).toBeHidden();
     await expect(page.locator("main footer")).toBeHidden();
     await expect(page.locator('a[data-testid="AppTabBar_Search_Link"]')).toHaveAttribute("href", "/search");
+    await expect(page.locator('a[data-testid="AppTabBar_Search_Link"] svg.bx-x-icon')).toHaveCount(1);
+    await expect(page.locator('a[href="/i/grok"]')).toBeHidden();
     await expect(page.locator("body")).toHaveCSS("font-family", /Helvetica Neue/);
     await expect(page.locator("[data-bx-quick-actions]")).toHaveCount(1);
     await page.evaluate(() => {
@@ -90,7 +92,7 @@ test("renders and saves the extension settings page", async () => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/options.html`);
     await expect(page.locator("h1").first()).toContainText("Better X");
-    await expect(page.locator(".feature-card")).toHaveCount(21);
+    await expect(page.locator(".feature-card")).toHaveCount(22);
     await expect(page.locator("#save")).toBeVisible();
     expect(await page.locator("body").evaluate((body) => getComputedStyle(body).backgroundColor)).toBe("rgb(8, 11, 16)");
     await page.locator("label.feature-card", { hasText: "Media saver" }).click();

@@ -22,6 +22,7 @@ describe("settings", () => {
     const result = migrateSettings({ version: 0, features: {} });
     expect(result.version).toBe(defaults.version);
     expect(result.features["quick-actions"]).toBe(true);
+    expect(result.features["hide-grok"]).toBe(true);
     expect(result.ai.enabled).toBe(false);
   });
 });

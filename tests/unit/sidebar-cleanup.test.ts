@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hideSidebar, installSidebarCleanup } from "../../src/features/sidebar-cleanup";
+import { hideGrok, hideSidebar, installSidebarCleanup } from "../../src/features/sidebar-cleanup";
 
 describe("sidebar cleanup", () => {
   it("hides X's entire sidebar", () => {
@@ -11,6 +11,8 @@ describe("sidebar cleanup", () => {
     expect(sidebar.hidden).toBe(true);
     expect(sidebar.dataset.bxSidebarHidden).toBe("true");
     expect(sidebar.getAttribute("aria-hidden")).toBe("true");
+    expect(sidebar.style.getPropertyValue("display")).toBe("none");
+    expect(sidebar.style.getPropertyPriority("display")).toBe("important");
   });
 
   it("hides bloat blocks embedded outside the sidebar root", () => {
@@ -29,6 +31,18 @@ describe("sidebar cleanup", () => {
 
     expect(document.querySelector<HTMLElement>("aside")?.hidden).toBe(true);
     expect(document.querySelector("main")?.textContent).toBe("Search");
+    stop();
+  });
+
+  it("hides a complementary sidebar and Grok entry points", () => {
+    document.body.innerHTML = `<main>Timeline</main><div role="complementary">Sidebar</div><nav><a href="/i/grok" aria-label="Grok">Grok</a></nav><button data-testid="grokAnalyzeButton">Ask Grok</button>`;
+    const stop = installSidebarCleanup();
+    hideGrok();
+
+    expect(document.querySelector<HTMLElement>('[role="complementary"]')?.style.getPropertyValue("display")).toBe("none");
+    expect(document.querySelector<HTMLElement>('a[href="/i/grok"]')?.style.getPropertyValue("display")).toBe("none");
+    expect(document.querySelector<HTMLElement>('[data-testid="grokAnalyzeButton"]')?.style.getPropertyValue("display")).toBe("none");
+    expect(document.querySelector("main")?.textContent).toBe("Timeline");
     stop();
   });
 });
