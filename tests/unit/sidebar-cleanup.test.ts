@@ -45,4 +45,27 @@ describe("sidebar cleanup", () => {
     expect(document.querySelector("main")?.textContent).toBe("Timeline");
     stop();
   });
+
+  it("removes left-nav bloat and keeps one Communities and Settings entry", async () => {
+    document.body.innerHTML = `<nav><a href="/home" aria-label="Home"><svg></svg><span>Home</span></a><a href="/i/bookmarks" aria-label="Bookmarks"><svg></svg><span>Bookmarks</span></a><a href="/i/lists" aria-label="Lists"><svg></svg><span>Lists</span></a><a href="/i/premium_sign_up" aria-label="Premium"><svg></svg><span>Premium</span></a><a href="/i/spaces/start" aria-label="Create your Space"><svg></svg><span>Create your Space</span></a><a href="https://studio.x.com" aria-label="Creator Studio"><svg></svg><span>Creator Studio</span></a><a href="https://ads.x.com" aria-label="Ads"><svg></svg><span>Ads</span></a><button aria-label="More"><svg></svg><span>More</span></button><a href="/alice" aria-label="Profile"><svg></svg><span>Profile</span></a></nav>`;
+    const stop = installSidebarCleanup();
+
+    expect(document.querySelectorAll('[data-bx-nav-entry="communities"]')).toHaveLength(1);
+    expect(document.querySelectorAll('[data-bx-nav-entry="settings"]')).toHaveLength(1);
+    expect(document.querySelector<HTMLElement>('[data-bx-nav-entry="communities"]')?.style.color).toBe("inherit");
+    expect(document.querySelector<HTMLElement>('[data-bx-nav-entry="settings"]')?.style.color).toBe("inherit");
+    expect(document.querySelector<HTMLElement>('a[href="/i/lists"]')?.hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>('a[href="/i/premium_sign_up"]')?.hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>('a[href="/i/spaces/start"]')?.hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>('a[href^="https://studio."]')?.hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>('a[href^="https://ads."]')?.hidden).toBe(true);
+    expect(document.querySelector<HTMLElement>('button[aria-label="More"]')?.hidden).toBe(true);
+
+    document.querySelector('[data-bx-nav-entry="communities"]')?.remove();
+    document.querySelector("nav")?.append(document.createElement("span"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(document.querySelectorAll('[data-bx-nav-entry="communities"]')).toHaveLength(1);
+    expect(document.querySelectorAll('[data-bx-nav-entry="settings"]')).toHaveLength(1);
+    stop();
+  });
 });

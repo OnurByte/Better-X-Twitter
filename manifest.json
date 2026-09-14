@@ -11,6 +11,10 @@
   ],
   "optional_permissions": ["downloads", "clipboardWrite"],
   "optional_host_permissions": ["https://*/*"],
+  "web_accessible_resources": [{
+    "resources": ["options.html"],
+    "matches": ["https://x.com/*", "https://twitter.com/*"]
+  }],
   "background": { "service_worker": "worker.js", "type": "module" },
   "action": { "default_title": "Better X", "default_popup": "popup.html" },
   "options_ui": { "page": "options.html", "open_in_tab": true },

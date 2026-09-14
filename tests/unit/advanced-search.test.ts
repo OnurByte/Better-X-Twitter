@@ -47,8 +47,11 @@ describe("advanced search", () => {
 
     expect(root.querySelector(".bx-search-main svg.bx-icon")).not.toBeNull();
     expect(root.querySelector(".bx-search-main")?.textContent).not.toContain("⌕");
+    expect(root.querySelectorAll(".bx-search-submit")).toHaveLength(1);
+    expect(root.textContent).not.toContain("Search X");
 
     const example = root.querySelector<HTMLButtonElement>("[data-bx-search-example]")!;
+    expect(example.querySelector("code")?.textContent).toContain('"15 Temmuz" OR darbe OR coup');
     example.click();
     expect(example.textContent).toContain("15 July 2016");
     expect(root.querySelector<HTMLInputElement>('input[name="allWords"]')?.value).toContain('"15 Temmuz" OR darbe OR coup');

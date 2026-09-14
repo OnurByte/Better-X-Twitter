@@ -42,10 +42,11 @@ export interface BetterXSettings {
   timeline: { originals: boolean; replies: boolean; quotes: boolean; reposts: boolean; promoted: boolean };
   focus: { bookmarksOnly: boolean; followingOnly: boolean; noMetrics: boolean; noTrending: boolean; noRecommendations: boolean; readingMode: boolean };
   sharing: { preferred: "original" | "fxtwitter" | "vxtwitter" };
+  appearance: { accentColor: string; liquidGlass: boolean; brandIcon: "bird" | "x" };
 }
 
 export const defaults: BetterXSettings = {
-  version: 1,
+  version: 2,
   features: {
     "quick-actions": true, "sidebar-cleanup": true, "hide-grok": true, "advanced-search": true, "fx-revival": true, "feed-rules": true, "ai-feed-filter": false,
     "ai-reply": false, "composer-tools": false, "smart-share": true, "rediscover": false,
@@ -60,13 +61,16 @@ export const defaults: BetterXSettings = {
   countryFlags: { enabled: false, preferXRegion: true, profileFallback: true, showEstimated: true },
   timeline: { originals: true, replies: true, quotes: true, reposts: true, promoted: true },
   focus: { bookmarksOnly: false, followingOnly: false, noMetrics: false, noTrending: false, noRecommendations: false, readingMode: false },
-  sharing: { preferred: "original" }
+  sharing: { preferred: "fxtwitter" },
+  appearance: { accentColor: "#1D9BF0", liquidGlass: true, brandIcon: "bird" }
 };
 
 export type SettingsPatch = Partial<BetterXSettings> & { features?: Record<string, boolean> };
 
 export function migrateSettings(input: Partial<BetterXSettings> | null | undefined): BetterXSettings {
   const source = input ?? {};
+  const accentColor = /^#[0-9a-f]{6}$/i.test(source.appearance?.accentColor ?? "") ? source.appearance!.accentColor.toUpperCase() : defaults.appearance.accentColor;
+  const preferred = (source.version ?? 0) < 2 && source.sharing?.preferred === "original" ? "fxtwitter" : source.sharing?.preferred;
   return {
     ...structuredClone(defaults),
     ...source,
@@ -78,7 +82,8 @@ export function migrateSettings(input: Partial<BetterXSettings> | null | undefin
     countryFlags: { ...defaults.countryFlags, ...(source.countryFlags ?? {}) },
     timeline: { ...defaults.timeline, ...(source.timeline ?? {}) },
     focus: { ...defaults.focus, ...(source.focus ?? {}) },
-    sharing: { ...defaults.sharing, ...(source.sharing ?? {}) },
+    sharing: { ...defaults.sharing, ...(source.sharing ?? {}), preferred: preferred ?? defaults.sharing.preferred },
+    appearance: { ...defaults.appearance, ...(source.appearance ?? {}), accentColor },
     version: defaults.version
   };
 }

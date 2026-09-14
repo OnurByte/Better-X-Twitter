@@ -18,6 +18,8 @@ import { observeRoutes } from "../x/route-observer";
 import { installXActionIcons } from "../x/icon-replacer";
 import { installGrokCleanup, installSidebarCleanup } from "./sidebar-cleanup";
 import { installAdvancedSearch } from "./advanced-search";
+import { installAppearance } from "./appearance";
+import { installEmbeddedSettings } from "./embedded-settings";
 
 function onPosts(context: PluginContext, handler: (post: ParsedPost) => void): () => void { return context.events.on("POST_DISCOVERED", (value) => { if (value) handler(value as ParsedPost); }); }
 
@@ -25,7 +27,11 @@ export function contentPlugins(): BetterXPlugin[] {
   let stopSidebarCleanup: () => void = () => undefined;
   let stopGrokCleanup: () => void = () => undefined;
   let stopAdvancedSearch: () => void = () => undefined;
+  let stopAppearance: () => void = () => undefined;
+  let stopEmbeddedSettings: () => void = () => undefined;
   return [
+    { id: "appearance", name: "Appearance", defaultEnabled: true, async start(context) { stopAppearance = await installAppearance(context); }, stop() { stopAppearance(); } },
+    { id: "embedded-settings", name: "Embedded Settings", defaultEnabled: true, start(context) { stopEmbeddedSettings = installEmbeddedSettings(context); }, stop() { stopEmbeddedSettings(); } },
     { id: "x-action-icons", name: "X Action Icons", defaultEnabled: true, start() { installXActionIcons(); }, stop() {} },
     { id: "sidebar-cleanup", name: "Better X Sidebar", defaultEnabled: true, start() { stopSidebarCleanup = installSidebarCleanup(); }, stop() { stopSidebarCleanup(); } },
     { id: "hide-grok", name: "Hide Grok", defaultEnabled: true, start() { stopGrokCleanup = installGrokCleanup(); }, stop() { stopGrokCleanup(); } },
@@ -39,7 +45,7 @@ export function contentPlugins(): BetterXPlugin[] {
     { id: "ai-reply", name: "AI Reply", defaultEnabled: false, start(context) { return context.settings.get().then((settings) => { if (!settings.ai.enabled) return; const attach = () => { const composer = context.x.findComposer(); if (composer) attachReplyTool(composer, context.runtime, settings.ai.stylePrompt); }; const observer = new MutationObserver(attach); observer.observe(document.body, { childList: true, subtree: true }); attach(); }); }, stop() {} },
     { id: "rediscover", name: "Bookmark Rediscover", defaultEnabled: false, start(context) { return context.settings.get().then((settings) => { if (!settings.rediscover.enabled) return; onPosts(context, (post) => { if (isBookmarkRoute()) void context.runtime.request({ type: "db.write", store: "bookmarks", operation: { type: "put", value: bookmarkRecord(post) } }); }); if (!isBookmarkRoute()) void renderRediscover(context.runtime, settings.rediscover.sessionLimit); }); }, stop() {} },
     { id: "local-library", name: "Local Library", defaultEnabled: false, start(context) { return context.settings.get().then((settings) => { if (!settings.features["local-library"]) return; onPosts(context, (post) => { void context.runtime.request({ type: "db.write", store: "library_entries", operation: { type: "put", value: { id: post.statusId ?? post.identity.contentHash, text: post.text, handle: post.author.handle, url: post.url, encounteredAt: Date.now() } } }); }); }); }, stop() {} },
-    { id: "smart-share", name: "Smart Share", defaultEnabled: true, start(context) { return context.settings.get().then(() => { installOverflowMenu(context, { share: true, media: false }); }); }, stop() {} },
+    { id: "smart-share", name: "Smart Share", defaultEnabled: true, start(context) { return context.settings.get().then((settings) => { installOverflowMenu(context, { share: true, media: false, target: settings.sharing.preferred }); }); }, stop() {} },
     { id: "media-saver", name: "Media Saver", defaultEnabled: false, start(context) { return context.settings.get().then(() => { installOverflowMenu(context, { share: false, media: true }); }); }, stop() {} },
     { id: "user-notes", name: "Private User Notes", defaultEnabled: false, start(context) { return context.settings.get().then(() => { installProfileTools(context, { notes: true, timeMachine: false }); }); }, stop() {} },
     { id: "time-machine", name: "Profile Time Machine", defaultEnabled: false, start(context) { return context.settings.get().then(() => { installProfileTools(context, { notes: false, timeMachine: true }); }); }, stop() {} },

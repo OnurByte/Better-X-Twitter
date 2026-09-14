@@ -6,6 +6,7 @@ describe("utility features", () => {
   it("builds native X search and explicit share links", () => {
     expect(buildSearchUrl("alice", "2025-01-01", "2025-02-01")).toContain("from%3Aalice");
     expect(shareUrl("https://x.com/alice/status/123", "fxtwitter")).toBe("https://fxtwitter.com/alice/status/123");
+    expect(shareUrl("https://twitter.com/alice/status/123?s=20#reply", "fxtwitter")).toBe("https://fxtwitter.com/alice/status/123");
   });
 
   it("calculates a bounded momentum rate", () => {

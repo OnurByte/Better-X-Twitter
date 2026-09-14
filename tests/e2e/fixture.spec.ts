@@ -33,6 +33,13 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
     await expect(page.locator('a[data-testid="AppTabBar_Search_Link"]')).toHaveAttribute("href", "/search");
     await expect(page.locator('a[data-testid="AppTabBar_Search_Link"] svg.bx-x-icon')).toHaveCount(1);
     await expect(page.locator('a[href="/i/grok"]')).toBeHidden();
+    await expect(page.locator('a[href="/i/lists"]')).toBeHidden();
+    await expect(page.locator('a[href="/i/premium_sign_up"]')).toBeHidden();
+    await expect(page.locator('a[href^="https://ads."]')).toBeHidden();
+    await expect(page.locator('button[aria-label="More"]')).toBeHidden();
+    await expect(page.locator('[data-bx-nav-entry="communities"]')).toHaveCount(1);
+    await expect(page.locator('[data-bx-nav-entry="settings"]')).toHaveCount(1);
+    await expect(page.locator('a[aria-label="X"] svg')).toHaveAttribute("data-bx-brand-icon", "bird");
     await expect(page.locator("body")).toHaveCSS("font-family", /Helvetica Neue/);
     await expect(page.locator("[data-bx-quick-actions]")).toHaveCount(1);
     await page.evaluate(() => {
@@ -43,7 +50,37 @@ test("loads the real content bundle as an unpacked Chrome extension", async () =
       document.body.append(button);
     });
     await expect(page.locator('button[data-testid="like"] svg.bx-x-icon')).toHaveCount(1);
+    await page.locator('button[data-testid="like"] svg.bx-x-icon path').evaluate((path) => path.setAttribute("d", "native-again"));
+    await expect(page.locator('button[data-testid="like"] svg.bx-x-icon path')).not.toHaveAttribute("d", "native-again");
     expect(errors).toEqual([]);
+  } finally {
+    await context.close();
+  }
+});
+
+test("embeds extension settings inside X settings", async () => {
+  const extensionPath = path.resolve("dist");
+  const fixture = fs.readFileSync(path.resolve("tests/fixtures/x.html"), "utf8");
+  const context = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), "better-x-embedded-settings-")), {
+    headless: true,
+    executablePath: "/usr/bin/chromium",
+    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
+  });
+  try {
+    context.serviceWorkers()[0] ?? await context.waitForEvent("serviceworker");
+    const page = await context.newPage();
+    await page.route("https://x.com/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: fixture }));
+    await page.goto("https://x.com/settings");
+    const entry = page.locator('[data-bx-settings-entry="true"]');
+    await expect(entry).toBeVisible();
+    await entry.click();
+    await expect(page).toHaveURL("https://x.com/settings/better-x");
+    const frame = page.frameLocator('[data-bx-settings-frame="true"]');
+    await expect(frame.locator("h1")).toHaveCount(0);
+    await expect(frame.locator("h2").first()).toHaveText("Appearance");
+    await expect(frame.locator("#apiKey")).toBeVisible();
+    await frame.locator('[data-accent="#7856FF"]').click();
+    await expect.poll(() => page.locator("html").evaluate((html) => getComputedStyle(html).getPropertyValue("--bx-accent").trim())).toBe("#7856FF");
   } finally {
     await context.close();
   }
@@ -72,14 +109,14 @@ test("opens the advanced search form and navigates with native X syntax", async 
     await page.locator(".bx-search-advanced summary").click();
     await page.locator('input[name="from"]').fill("@NASA");
     await page.locator('select[name="media"]').selectOption("images");
-    await page.locator(".bx-search-submit-bottom").click();
+    await page.locator(".bx-search-submit").click();
     await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("nasa esa from:NASA filter:images");
   } finally {
     await context.close();
   }
 });
 
-test("renders and saves the extension settings page", async () => {
+test("renders and auto-saves the X-native embedded settings page", async () => {
   const extensionPath = path.resolve("dist");
   const context = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), "better-x-settings-")), {
     headless: true,
@@ -90,13 +127,19 @@ test("renders and saves the extension settings page", async () => {
     const worker = context.serviceWorkers()[0] ?? await context.waitForEvent("serviceworker");
     const extensionId = new URL(worker.url()).host;
     const page = await context.newPage();
-    await page.goto(`chrome-extension://${extensionId}/options.html`);
-    await expect(page.locator("h1").first()).toContainText("Better X");
-    await expect(page.locator(".feature-card")).toHaveCount(22);
-    await expect(page.locator("#save")).toBeVisible();
-    expect(await page.locator("body").evaluate((body) => getComputedStyle(body).backgroundColor)).toBe("rgb(8, 11, 16)");
-    await page.locator("label.feature-card", { hasText: "Media saver" }).click();
-    await page.locator("#save").click();
+    await page.goto(`chrome-extension://${extensionId}/options.html?embedded=1`);
+    await expect(page.locator("h1")).toHaveCount(0);
+    await expect(page.locator("h2").first()).toHaveText("Appearance");
+    await expect(page.locator("body")).toHaveClass(/embedded/);
+    await expect(page.locator("body")).not.toHaveClass(/liquid-glass/);
+    await expect(page.locator(".hero")).toHaveCount(0);
+    await expect(page.locator(".feature-row")).toHaveCount(22);
+    await expect(page.locator("#accentColor")).toHaveValue("#1d9bf0");
+    await expect(page.locator("#liquidGlass")).toBeChecked();
+    await expect(page.locator("#brandIcon")).toHaveValue("bird");
+    await page.locator('[data-accent="#7856FF"]').click();
+    await expect(page.locator("#accentColor")).toHaveValue("#7856ff");
+    await page.locator("label.feature-row", { hasText: "Media saver" }).click();
     await expect(page.locator("#saveStatus")).toContainText("Saved");
   } finally {
     await context.close();
